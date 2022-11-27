@@ -1,4 +1,4 @@
-module rohitsingh/reed
+module github.com/rohitkochhar/reed
 
 go 1.19
 
