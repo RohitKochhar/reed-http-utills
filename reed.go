@@ -99,3 +99,49 @@ func PutString(httpUrl string, message string, expCodes []int) error {
 	}
 	return nil
 }
+
+/*
+Name: DeleteString
+
+Description:
+  - Wraps HTTP DELETE request in utility function
+    for easier usage and clarity
+
+Inputs:
+  - httpUrl (string): URL to send request to
+  - message (string): Message to send
+  - expCodes ([]int): Expected response from server
+    (nil if any response should be expected accepted)
+
+Outputs:
+  - error: Returned if there was an error in the process
+*/
+func DeleteString(httpUrl string, message string, expCodes []int) error {
+	req, err := http.NewRequest(
+		http.MethodDelete,
+		httpUrl,
+		bytes.NewBuffer([]byte(message)),
+	)
+	if err != nil {
+		return fmt.Errorf("error while creating DELETE request: %q", err)
+	}
+	req.Header.Set("Content-Type", "text/plain")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error while sending DELETE request: %q", err)
+	}
+	// Check the reponse code if applicable
+	if expCodes != nil {
+		// Iterate through the provided expCodes
+		for _, code := range expCodes {
+			if resp.StatusCode == code {
+				// If the response code was in our acceptable list
+				// we can return a success
+				return nil
+			}
+		}
+		// If we didn't find an acceptable code, return an error
+		return fmt.Errorf("response contained unacceptable status code: %s (acceptable options are: %+v)", resp.Status, expCodes)
+	}
+	return nil
+}
