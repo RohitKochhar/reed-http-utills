@@ -4,9 +4,10 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"rohitsingh/reed"
 	"strings"
 	"testing"
+
+	"github.com/rohitkochhar/reed-http-utills"
 
 	"github.com/gorilla/mux"
 )

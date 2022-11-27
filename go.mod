@@ -1,4 +1,4 @@
-module github.com/rohitkochhar/reed
+module github.com/rohitkochhar/reed-http-utills
 
 go 1.19
 
