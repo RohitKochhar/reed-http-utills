@@ -116,3 +116,36 @@ func TestReplyTextContent(t *testing.T) {
 		})
 	}
 }
+
+// TestPutString uses table-driven testing to make sure
+// the PutString function is working as expected
+func TestPutString(t *testing.T) {
+	// Use table-driven testing to cover various edge cases
+	testCases := []struct {
+		name     string // Name of the test
+		expCodes []int  // acceptable return codes
+	}{
+		{"NoSpecifiedExpCodes", nil},
+		{"OneSpecifiedExpCode", []int{http.StatusOK}},
+		{"TwoSpecifiedExpCodes", []int{http.StatusAccepted, http.StatusOK}},
+	}
+	for _, tc := range testCases {
+		t.Run("Test"+tc.name, func(t *testing.T) {
+			// Define a function wrapper that will be used
+			// to handle get requests to the root
+			handler := func(w http.ResponseWriter, r *http.Request) {
+				reed.ReplyTextContent(w, r, http.StatusOK, "Cool")
+			}
+			// Attach the handler to the root of the server
+			r := mux.NewRouter()
+			r.HandleFunc("/", handler)
+			// Create a HTTP test server
+			ts := setupAPI(t, r)
+			defer ts.Close()
+			// Send a PUT request to the root
+			if err := reed.PutString(ts.URL+"/", "cool", tc.expCodes); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
